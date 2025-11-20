@@ -3,8 +3,6 @@ import environ
 import oscar
 
 env = environ.Env()
-# ✅ This line loads the .env file from the same directory as settings.py
-environ.Env.read_env(os.path.join(os.path.dirname(__file__), '.env'))
 
 # Path helper
 location = lambda x: os.path.join(
@@ -20,19 +18,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Use a Sqlite database by default
 DATABASES = {
     'default': {
-#        'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
-#        'NAME': os.environ.get('DATABASE_NAME', location('db.sqlite')),
-#        'USER': os.environ.get('DATABASE_USER', None),
-#        'PASSWORD': os.environ.get('DATABASE_PASSWORD', None),
-#        'HOST': os.environ.get('DATABASE_HOST', None),
-#        'PORT': os.environ.get('DATABASE_PORT', None),
-#        'ATOMIC_REQUESTS': True
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'oscar_db',
-        'USER': 'postgres',
-        'PASSWORD': 'Sybase#97',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get('DATABASE_NAME', location('db.sqlite')),
+        'USER': os.environ.get('DATABASE_USER', None),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', None),
+        'HOST': os.environ.get('DATABASE_HOST', None),
+        'PORT': os.environ.get('DATABASE_PORT', None),
+        'ATOMIC_REQUESTS': True
     }
 }
 
@@ -120,7 +112,6 @@ STORAGES = {
     },
 }
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -177,7 +168,6 @@ MIDDLEWARE = [
 
     # Ensure a valid basket is added to the request instance for every request
     'oscar.apps.basket.middleware.BasketMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'urls'
@@ -275,10 +265,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
 
-    # Custom override apps
-    # 'sandbox.apps.catalogue',
-    # 'sandbox.apps.catalogue.apps.CatalogueConfig',
-    # Oscar core and dashboard apps
     'oscar.config.Shop',
     'oscar.apps.analytics.apps.AnalyticsConfig',
     'oscar.apps.checkout.apps.CheckoutConfig',
@@ -310,14 +296,15 @@ INSTALLED_APPS = [
     'oscar.apps.dashboard.communications.apps.CommunicationsDashboardConfig',
     'oscar.apps.dashboard.shipping.apps.ShippingDashboardConfig',
 
-    # 3rd-party apps
+    # 3rd-party apps that Oscar depends on
     'widget_tweaks',
     'haystack',
     'treebeard',
-    'versatileimagefield',
+    'sorl.thumbnail',
+    'easy_thumbnails',
     'django_tables2',
 
-    # Django apps
+    # Django apps that the sandbox depends on
     'django.contrib.sitemaps',
 ]
 
@@ -422,26 +409,15 @@ OSCAR_ORDER_STATUS_CASCADE = {
 # Sorl
 # ====
 
-# THUMBNAIL_DEBUG = DEBUG
-# THUMBNAIL_KEY_PREFIX = 'oscar-sandbox'
-# THUMBNAIL_KVSTORE = env(
-#  'THUMBNAIL_KVSTORE',
-#    default='sorl.thumbnail.kvstores.cached_db_kvstore.KVStore')
-#THUMBNAIL_REDIS_URL = env('THUMBNAIL_REDIS_URL', default=None)
-
-# Easy Thumbnails
-THUMBNAIL_ALIASES = {
-    '': {
-        'product': {'size': (300, 300), 'crop': True},
-    },
-}
-THUMBNAIL_BASEDIR = 'thumbnails'
+THUMBNAIL_DEBUG = DEBUG
+THUMBNAIL_KEY_PREFIX = 'oscar-sandbox'
+THUMBNAIL_KVSTORE = env(
+    'THUMBNAIL_KVSTORE',
+    default='sorl.thumbnail.kvstores.cached_db_kvstore.KVStore')
+THUMBNAIL_REDIS_URL = env('THUMBNAIL_REDIS_URL', default=None)
 
 # easy-thumbnail. See https://github.com/SmileyChris/easy-thumbnails/issues/641#issuecomment-2291098096
 THUMBNAIL_DEFAULT_STORAGE_ALIAS = "default"
-
-
-OSCAR_PRODUCT_IMAGE_MODEL = 'catalogue.ProductImage'
 
 # Django 1.6 has switched to JSON serializing for security reasons, but it does not
 # serialize Models. We should resolve this by extending the
