@@ -1,0 +1,50 @@
+services:
+  db:
+    container_name: oscar_db
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: oscar_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "Sybase#97"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - oscar_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    container_name: oscar_web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DJANGO_SETTINGS_MODULE: sandbox.settings
+      DATABASE_URL: postgres://postgres:Sybase%2397@db:5432/oscar_db
+      PYTHONPATH: /app  # Ensures sandbox is importable
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    working_dir: /app/sandbox
+    # No explicit command here — entrypoint.sh will run migrations, collectstatic, then exec uwsgi
+    networks:
+      - oscar_net
+
+volumes:
+  postgres_data:
+
+networks:
+  oscar_net:
+    name: oscar_net
+

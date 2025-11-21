@@ -2,6 +2,8 @@ import os
 import environ
 import oscar
 
+import dj_database_url
+
 env = environ.Env()
 # ✅ This line loads the .env file from the same directory as settings.py
 environ.Env.read_env(os.path.join(os.path.dirname(__file__), '.env'))
@@ -19,7 +21,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Use a Sqlite database by default
 DATABASES = {
-    'default': {
+    'default': dj_database_url.config(
+        default='postgres://postgres:Sybase%2397@db:5432/oscar_db',
+        conn_max_age=600)
 #        'ENGINE': os.environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
 #        'NAME': os.environ.get('DATABASE_NAME', location('db.sqlite')),
 #        'USER': os.environ.get('DATABASE_USER', None),
@@ -27,13 +31,6 @@ DATABASES = {
 #        'HOST': os.environ.get('DATABASE_HOST', None),
 #        'PORT': os.environ.get('DATABASE_PORT', None),
 #        'ATOMIC_REQUESTS': True
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'oscar_db',
-        'USER': 'postgres',
-        'PASSWORD': 'Sybase#97',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
 }
 
 CACHES = {
