@@ -313,6 +313,11 @@ INSTALLED_APPS = [
     'treebeard',
     'versatileimagefield',
     'django_tables2',
+    'sorl.thumbnail',
+
+    # Oscar API
+    'rest_framework',
+    'oscarapi',
 
     # Django apps
     'django.contrib.sitemaps',
@@ -416,27 +421,9 @@ OSCAR_ORDER_STATUS_CASCADE = {
     'Complete': 'Shipped',
 }
 
-# Sorl
-# ====
-
-# THUMBNAIL_DEBUG = DEBUG
-# THUMBNAIL_KEY_PREFIX = 'oscar-sandbox'
-# THUMBNAIL_KVSTORE = env(
-#  'THUMBNAIL_KVSTORE',
-#    default='sorl.thumbnail.kvstores.cached_db_kvstore.KVStore')
-#THUMBNAIL_REDIS_URL = env('THUMBNAIL_REDIS_URL', default=None)
-
-# Easy Thumbnails
-THUMBNAIL_ALIASES = {
-    '': {
-        'product': {'size': (300, 300), 'crop': True},
-    },
-}
-THUMBNAIL_BASEDIR = 'thumbnails'
-
-# easy-thumbnail. See https://github.com/SmileyChris/easy-thumbnails/issues/641#issuecomment-2291098096
-THUMBNAIL_DEFAULT_STORAGE_ALIAS = "default"
-
+# Thumbnails
+# ===========
+# Oscar uses sorl-thumbnail for product image thumbnails
 
 OSCAR_PRODUCT_IMAGE_MODEL = 'catalogue.ProductImage'
 
@@ -451,6 +438,22 @@ SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=False)
 SECURE_HSTS_SECONDS = env.int('SECURE_HSTS_SECONDS', default=0)
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
+
+# ====================
+# REST Framework settings
+# ====================
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
+# Oscar API settings
+OSCARAPI_BLOCK_ADMIN_API_ACCESS = False
 
 # Try and import local settings which can be used to override any of the above.
 try:
