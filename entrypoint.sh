@@ -14,8 +14,14 @@ cd /app/sandbox
 echo "Running Django migrations..."
 python manage.py migrate
 
-echo "Collecting static files..."
-python manage.py collectstatic --noinput
+# Only collect static files if not already done (speeds up restarts)
+if [ ! -f /app/sandbox/public/static/.collected ]; then
+  echo "Collecting static files..."
+  python manage.py collectstatic --noinput
+  touch /app/sandbox/public/static/.collected
+else
+  echo "Static files already collected, skipping..."
+fi
 
 if [ "$#" -gt 0 ]; then
   echo "Executing passed command: $@"

@@ -28,6 +28,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       DJANGO_SETTINGS_MODULE: sandbox.settings
       DATABASE_URL: postgres://postgres:Sybase%2397@db:5432/oscar_db
