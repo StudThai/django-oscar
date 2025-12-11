@@ -74,15 +74,6 @@ class ReverseStartsWith(StartsWith):
             raise Exception("Flipped process_lhs does not accept lhs argument")
         return super().process_rhs(compiler, connection)
 
-    def as_sql(self, compiler, connection):
-        # Override as_sql to handle Django 6.0+ where process_lhs/process_rhs
-        # return tuples instead of lists (changed from lists in Django 5.x)
-        lhs, lhs_params = self.process_lhs(compiler, connection)
-        rhs, rhs_params = self.process_rhs(compiler, connection)
-        params = list(lhs_params) + list(rhs_params)
-        rhs = self.get_rhs_op(connection, rhs)
-        return f"{lhs} {rhs}", params
-
 
 Field.register_lookup(ReverseStartsWith, "rstartswith")
 
