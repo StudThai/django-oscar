@@ -76,11 +76,12 @@ class ReverseStartsWith(StartsWith):
 
     def as_sql(self, compiler, connection):
         # Override as_sql to handle Django 6.0+ where process_lhs/process_rhs
-        # return tuples instead of lists
-        lhs_sql, lhs_params = self.process_lhs(compiler, connection)
-        rhs_sql, rhs_params = self.process_rhs(compiler, connection)
+        # return tuples instead of lists (changed from lists in Django 5.x)
+        lhs, lhs_params = self.process_lhs(compiler, connection)
+        rhs, rhs_params = self.process_rhs(compiler, connection)
         params = list(lhs_params) + list(rhs_params)
-        return f"{lhs_sql} LIKE {rhs_sql}", params
+        rhs = self.get_rhs_op(connection, rhs)
+        return f"{lhs} {rhs}", params
 
 
 Field.register_lookup(ReverseStartsWith, "rstartswith")
